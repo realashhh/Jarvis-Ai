@@ -428,6 +428,44 @@ micBtn.addEventListener("click", function() {
   }
 
 });
+  
+function speak(text) {
+    const speech = window.speechSynthesis;
+
+    speech.cancel();
+
+    const message = new SpeechSynthesisUtterance(text);
+
+    const voices = speech.getVoices();
+
+    const maleVoice = voices.find(voice =>
+        /Google UK English Male|Microsoft Ryan|Daniel|Alex/i.test(voice.name)
+    );
+
+    if (maleVoice) {
+        message.voice = maleVoice;
+    } else {
+        const britishVoice = voices.find(voice =>
+            /en-GB/i.test(voice.lang)
+        );
+
+        if (britishVoice) {
+            message.voice = britishVoice;
+        }
+    }
+
+    message.lang = "en-GB";
+    message.pitch = 0.75;
+    message.rate = 0.90;
+    message.volume = 1;
+
+    speech.speak(message);
+}
+
+window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+};
+  
 
 // WELCOME MESSAGE
 addMessage("JARVIS",

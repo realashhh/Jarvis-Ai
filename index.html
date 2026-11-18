@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#020b1a">
+<title>J.A.R.V.I.S.</title>
+<style>
+  :root {
+    --bg: #020b1a;
+    --panel: rgba(8, 40, 80, 0.35);
+    --line: #1e90ff;
+    --glow: #4fc3ff;
+    --text: #cfe9ff;
+    --dim: #6f9bc4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(circle at 50% 20%, #06244a 0%, var(--bg) 60%);
+    color: var(--text);
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(30,144,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,144,255,0.07) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+  }
+
+  header {
+    text-align: center;
+    padding: 14px 10px 4px;
+    padding-top: calc(14px + env(safe-area-inset-top, 0px));
+    position: relative;
+    z-index: 1;
+  }
+  header h1 {
+    font-size: 22px;
+    letter-spacing: 8px;
+    font-weight: 300;
+    color: var(--glow);
+    text-shadow: 0 0 12px var(--glow);
+  }
+  #status {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--dim);
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  .reactor-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .reactor {
+    position: relative;
+    width: 130px; height: 130px;
+  }
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    box-shadow: 0 0 14px var(--line), inset 0 0 14px rgba(30,144,255,0.4);
+  }
+  .r1 { inset: 0; border-style: dashed; animation: spin 14s linear infinite; }
+  .r2 { inset: 14px; border-color: var(--glow); border-top-color: transparent; border-bottom-color: transparent; animation: spin 5s linear infinite reverse; }
+  .r3 { inset: 30px; border-style: dotted; animation: spin 9s linear infinite; }
+  .core {
+    position: absolute;
+    inset: 46px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0%, var(--glow) 40%, #0a5fd1 100%);
+    box-shadow: 0 0 25px var(--glow), 0 0 60px var(--line);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.12); opacity: 1; }
+  }
+
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 14px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 15px;
+    line-height: 1.4;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    box-shadow: 0 0 10px rgba(30,144,255,0.25);
+    word-wrap: break-word;
+  }
+  .msg.jarvis { align-self: flex-start; border-top-left-radius: 2px; }
+  .msg.user {
+    align-self: flex-end;
+    border-top-right-radius: 2px;
+    background: rgba(30,144,255,0.25);
+  }
+  .msg .who {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--glow);
+    margin-bottom: 3px;
+  }
+
+  #bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    background: rgba(2, 11, 26, 0.9);
+    border-top: 1px solid var(--line);
+    position: relative;
+    z-index: 1;
+  }
+  #input {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 22px;
+    font-size: 15px;
+    outline: none;
+  }
+  #input::placeholder { color: var(--dim); }
+  #input:focus { box-shadow: 0 0 12px var(--line); }
+  button {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--glow);
+    border-radius: 50%;
+    width: 46px; height: 46px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(30,144,255,0.4);
+  }
+  button:active { background: rgba(30,144,255,0.5); }
+  #send { font-size: 18px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>J.A.R.V.I.S.</h1>
+  <div id="status">Systems online</div>
+</header>
+
+<div class="reactor-wrap">
+  <div class="reactor">
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div class="ring r3"></div>
+    <div class="core"></div>
+  </div>
+</div>
+
+<div id="chat"></div>
+
+<div id="bar">
+  <button id="mic" title="Microphone">🎤</button>
+  <input id="input" type="text" placeholder="Type a message to JARVIS..." autocomplete="off">
+  <button id="send" title="Send">➤</button>
+</div>
+
+<script>
+  const chat = document.getElementById("chat");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("send");
+  const micBtn = document.getElementById("mic");
+  const statusEl = document.getElementById("status");
+
+  function addMessage(who, text) {
+    const div = document.createElement("div");
+    div.className = "msg " + (who === "JARVIS" ? "jarvis" : "user");
+    const label = document.createElement("span");
+    label.className = "who";
+    label.textContent = who === "JARVIS" ? "J.A.R.V.I.S." : "YOU";
+    const body = document.createElement("span");
+    body.textContent = text;
+    div.appendChild(label);
+    div.appendChild(body);
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function handleSend() {
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage("YOU", text);
+    input.value = "";
+    setTimeout(function () {
+      addMessage("JARVIS", "I heard you, sir. My brain is not connected yet. That comes in Stage 3.");
+    }, 500);
+  }
+
+  sendBtn.addEventListener("click", handleSend);
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") handleSend();
+  });
+
+  micBtn.addEventListener("click", function () {
+    addMessage("JARVIS", "The microphone will be activated in Stage 2, sir.");
+  });
+
+  addMessage("JARVIS", "Good day, sir. J.A.R.V.I.S. interface is online. How may I assist you?");
+</script>
+</body>
+  </html>
+  
